@@ -1,0 +1,4 @@
+# Data settings shared by every script. Change here, not in code.
+seed: 42
+val_fraction: 0.10        # stratified validation split carved from train
+llm_sample_size: 500      # fixed, seeded, stratified test sample used for the LLM (and every other method)

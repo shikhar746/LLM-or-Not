@@ -18,3 +18,8 @@ Each entry: what was decided, why, and what would change the decision.
 - **Consequence:** every other method is *also* scored on the same 500 items, so the comparison is
   like-for-like. Methods 1–3 are additionally scored on the full 3,080-item test set.
 - **Trade-off:** CIs on 500 items are wider (roughly ±4 accuracy points near 50%, narrower near 90%).
+
+## D4. Pinned environment, one seed in one place
+- Exact versions in `requirements.txt`; the global seed lives in `configs/data.yaml`.
+- **Why:** a different scikit-learn or numpy version can change results slightly. Pinning plus a
+  fixed seed means anyone re-running the scripts gets the same numbers.
