@@ -70,6 +70,8 @@ def load_raw(raw_dir: Path = RAW_DIR) -> tuple[pd.DataFrame, pd.DataFrame]:
     download(raw_dir)
     train = pd.read_csv(raw_dir / "train.csv").rename(columns={"category": "label"})
     test = pd.read_csv(raw_dir / "test.csv").rename(columns={"category": "label"})
+    for df in (train, test):
+        df["text"] = df["text"].str.strip()  # a few raw texts start with a stray newline
     return train, test
 
 
