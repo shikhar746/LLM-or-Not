@@ -1,0 +1,9 @@
+check,count,out_of,pct,label_agreement_pct
+within_train_exact_duplicates,10,10003,0.1,
+within_train_texts_with_conflicting_labels,0,9993,0.0,
+within_test_exact_duplicates,1,3080,0.03,
+within_test_texts_with_conflicting_labels,0,3079,0.0,
+test_exact_in_train,11,3080,0.36,100.0
+test_near_dup_sim_ge_0.95,369,3080,11.98,97.0
+test_near_dup_sim_ge_0.90,700,3080,22.73,94.7
+test_near_dup_sim_ge_0.80,1379,3080,44.77,92.4
