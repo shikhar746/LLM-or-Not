@@ -23,3 +23,27 @@ Each entry: what was decided, why, and what would change the decision.
 - Exact versions in `requirements.txt`; the global seed lives in `configs/data.yaml`.
 - **Why:** a different scikit-learn or numpy version can change results slightly. Pinning plus a
   fixed seed means anyone re-running the scripts gets the same numbers.
+
+## D5. Validation split: 10% of train, stratified (1,001 rows; 3-19 per intent)
+- **Why 10%:** keeps 9,002 rows for training while giving enough rows to compare hyperparameter
+  settings. Stratified so every intent appears in validation.
+- **Weakness:** some intents have only 3 validation examples, so per-intent validation scores are
+  noisy. We only use validation for overall accuracy / macro-F1 when choosing settings.
+
+## D6. Train/test overlap: keep the official test set, also report a low-overlap subset
+Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`):
+- Exact overlap after normalisation is small: 11 of 3,080 test items (0.36%).
+- Lexical near-duplicates are common: 369 test items (11.98%) have a train item with char-n-gram
+  similarity >= 0.95, and 700 (22.73%) >= 0.90. Most are word reorderings or one-word edits of a
+  train sentence (Banking77 was written by people paraphrasing each other).
+- **Decision:** headline results use the full official test set, so they are comparable with
+  published Banking77 numbers. We additionally report every method on the test items whose
+  closest train item has similarity < 0.90 (the "low-overlap subset").
+- **Why this matters for the research question:** TF-IDF matches surface words, so it should
+  benefit most from near-duplicates; a zero-shot LLM sees no training data, so it cannot. Scoring
+  on the low-overlap subset tests whether the TF-IDF advantage (if any) survives.
+- **Threshold 0.90 is a judgement call:** a random sample of pairs above it were reorderings or
+  near-identical rewrites. It is reported, not tuned.
+- Near-duplicate pairs whose labels disagree (e.g. "How long does a card delivery take?" =
+  `card_arrival` in test vs `card_delivery_estimate` in train) hint at label noise or genuinely
+  overlapping intents. These feed the error analysis later.
