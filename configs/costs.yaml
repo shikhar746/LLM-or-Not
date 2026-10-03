@@ -1,0 +1,9 @@
+# Prices used by llmornot/costs.py. Currency: INR.
+# null = not decided yet; the benchmark then reports compute-seconds only, never a guessed price.
+
+local:
+  # Hourly price of the machine that runs local models (see DECISIONS.md D9).
+  cpu_price_per_hour: null
+  gpu_price_per_hour: null
+
+api: {}   # unused in the MVP (Ollama backend chosen); kept so API models can be added later
