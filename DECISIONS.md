@@ -47,3 +47,24 @@ Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`)
 - Near-duplicate pairs whose labels disagree (e.g. "How long does a card delivery take?" =
   `card_arrival` in test vs `card_delivery_estimate` in train) hint at label noise or genuinely
   overlapping intents. These feed the error analysis later.
+
+## D7. Paired percentile bootstrap, 2,000 resamples
+- Resample test items with replacement 2,000 times; the CI is the 2.5th-97.5th percentile of the
+  metric across resamples.
+- **Paired:** the same 2,000 resampled index sets are used for every model, so all models are
+  judged on identical draws (needed for fair model-vs-model comparisons later).
+- **Why 2,000:** enough for stable 2.5%/97.5% percentiles; costs seconds, not minutes.
+- macro-F1 is written by hand (vectorised with `np.bincount`) so 2,000 resamples are fast; a test
+  checks it equals scikit-learn's `f1_score(average="macro")`.
+
+## D8. Latency: one query at a time, wall-clock, after warm-up
+- Each message is classified on its own, as in live routing. We report p50 and p95.
+- The first 10 calls are discarded (one-off model loading, caches).
+- Batch throughput would flatter the fast models further; it is not what a single customer feels.
+- Measured on the author's laptop (RTX 3050 4 GB, 16 GB RAM), not the development container.
+
+## D9. Cost of local models = compute time x an hourly machine price
+- A local model has no per-token bill, but it is not free: it occupies a machine.
+- We report compute-seconds per 1,000 queries (always measurable) and convert to INR only with an
+  hourly price written in `configs/costs.yaml`. Until that price is chosen, the cost column says so
+  instead of showing a guess.
