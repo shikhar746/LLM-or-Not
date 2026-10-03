@@ -1,9 +1,9 @@
-# Pinned versions. Tested on Python 3.13.
+# Pinned versions. Tested on Python 3.11 (the target machine runs 3.11).
 # Install: python -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/pip install -e .
-numpy==2.5.4
+numpy==2.4.6
 pandas==3.1.0
 scikit-learn==1.9.1
-scipy==1.18.1
+scipy==1.17.1
 matplotlib==3.11.2
 PyYAML==6.0.3
 requests==2.34.2
