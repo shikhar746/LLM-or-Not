@@ -26,12 +26,16 @@ def macro_f1(y_true: np.ndarray, y_pred: np.ndarray) -> float:
                   F1 = 2*TP / (predicted-as-c + truly-c)   (same thing, no division by zero issues).
     Averaged over every class that appears in y_true or y_pred (scikit-learn's default), so a
     class the model predicts but never sees correctly counts as F1 = 0 and drags the mean down.
+
+    A prediction of -1 means "invalid output" (an LLM answer that is not one of the labels). It is
+    always wrong: it lowers recall of the true class but is not a class of its own.
     """
     y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    valid = y_pred >= 0
     n_classes = int(max(y_true.max(), y_pred.max())) + 1
     tp = np.bincount(y_true[y_true == y_pred], minlength=n_classes)
     n_true = np.bincount(y_true, minlength=n_classes)
-    n_pred = np.bincount(y_pred, minlength=n_classes)
+    n_pred = np.bincount(y_pred[valid], minlength=n_classes)
     present = (n_true + n_pred) > 0
     f1 = 2 * tp[present] / (n_true[present] + n_pred[present])
     return float(f1.mean())

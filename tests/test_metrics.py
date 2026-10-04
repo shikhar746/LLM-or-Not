@@ -21,6 +21,12 @@ def test_macro_f1_counts_wrongly_predicted_class_as_zero():
     assert macro_f1([0, 0], [0, 3]) == pytest.approx((2 / 3 + 0) / 2)
 
 
+def test_invalid_prediction_is_wrong_but_not_a_class():
+    # item 2 got an invalid LLM answer (-1): class 1 has TP=0, true=1, pred=0 -> F1 = 0
+    assert accuracy([0, 1], [0, -1]) == 0.5
+    assert macro_f1([0, 1], [0, -1]) == pytest.approx((1 + 0) / 2)
+
+
 def test_macro_f1_matches_sklearn_on_random_data():
     rng = np.random.default_rng(0)
     y_true, y_pred = rng.integers(0, 77, 3000), rng.integers(0, 77, 3000)
