@@ -68,3 +68,18 @@ Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`)
 - We report compute-seconds per 1,000 queries (always measurable) and convert to INR only with an
   hourly price written in `configs/costs.yaml`. Until that price is chosen, the cost column says so
   instead of showing a guess.
+
+## D10. Hyperparameters: grid search on validation, then refit on train + validation
+- Each grid point is fitted on train (9,002) and scored on validation (1,001); the best by
+  validation macro-F1 wins (ties go to the stronger regularisation, listed first).
+- The winner is refit on all 10,003 labelled rows before the single test evaluation, so the final
+  model uses all labelled data. Every trial is saved to `results/tuning_<method>.csv`.
+- **Why macro-F1 for selection:** the test set is balanced across intents, so the selection
+  criterion should weigh every intent equally too.
+
+## D11. TF-IDF features: word 1-2 grams + character 2-5 grams, sublinear TF, logistic regression
+- Word n-grams catch phrases ("top up", "exchange rate"); character n-grams catch typos and word
+  forms ("topup" / "top-up", "verify" / "verifying"). Combining both is a standard strong text baseline.
+- Logistic regression: fast, linear, gives probabilities (needed later for calibration/abstention).
+- Only C (regularisation strength) is tuned; the n-gram ranges are fixed up front to keep the
+  search small and the baseline honest rather than over-tuned.
