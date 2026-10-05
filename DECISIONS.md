@@ -83,3 +83,12 @@ Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`)
 - Logistic regression: fast, linear, gives probabilities (needed later for calibration/abstention).
 - Only C (regularisation strength) is tuned; the n-gram ranges are fixed up front to keep the
   search small and the baseline honest rather than over-tuned.
+
+## D12. Sentence encoder: all-MiniLM-L6-v2, frozen, L2-normalised vectors
+- 22M parameters, 384-dimensional vectors; fast on a laptop CPU and tiny on a 4 GB GPU.
+- Frozen (not fine-tuned) on purpose: fine-tuning an encoder is method 4 (Phase 2). Here we test
+  whether general-purpose meaning-vectors plus a linear classifier beat word-count features.
+- Vectors are normalised to length 1 (the model's intended use); C is tuned on validation.
+- The encoder is passed into the model, so the grid search loads it once; tests use a fake
+  encoder so they run without downloading anything.
+- Limitation: the model is fetched from Hugging Face by name without a pinned revision.
