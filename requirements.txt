@@ -8,3 +8,8 @@ matplotlib==3.11.2
 PyYAML==6.0.3
 requests==2.34.2
 pytest==9.1.1
+# Embeddings (method 3). On a machine with an NVIDIA GPU, install the CUDA build of torch first:
+#   pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu128
+torch==2.14.1
+sentence-transformers==6.2.0
+transformers==5.20.2
