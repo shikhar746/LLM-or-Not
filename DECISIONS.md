@@ -92,3 +92,40 @@ Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`)
 - The encoder is passed into the model, so the grid search loads it once; tests use a fake
   encoder so they run without downloading anything.
 - Limitation: the model is fetched from Hugging Face by name without a pinned revision.
+
+## D13. LLM backend: local Ollama, small model that fits a 4 GB GPU
+- Chosen by the project owner: free, private, no API budget needed.
+- Hardware: RTX 3050 with 4 GB VRAM. A 4-bit 3-4B model (~2-2.5 GB) fits fully in VRAM; a 7-8B
+  model (~4.7 GB) would spill onto the CPU and run several times slower.
+- Candidates (only those installed are tried): qwen2.5:3b, llama3.2:3b, gemma2:2b, phi3.5.
+  The final model is picked on validation by `scripts/tune_llm.py`, never on test.
+
+## D14. Prompt design
+- Two variants, both under version control in `prompts/`:
+  `zeroshot_names` (just the 77 label names) and `zeroshot_descriptions` (name + one-line
+  description). Comparing them on validation shows whether the descriptions earn their extra tokens.
+- Descriptions were written from label names and a few training examples per intent; the test set
+  was never read. Dataset quirks in label strings (`Refund_not_showing_up`, `reverted_card_payment?`)
+  are kept so outputs map 1:1 to gold labels.
+- Labels are listed alphabetically so related intents (card_*, top_up_*) are adjacent.
+- The long label list is the system message and comes first; the customer message comes last.
+  The prefix is identical for every query, so Ollama can reuse its computation for it, which
+  cuts latency.
+- No "think step by step": reasoning text would multiply output tokens and latency, and the point
+  of this method is the cheapest possible LLM routing. (A reasoning variant could be a later ablation.)
+
+## D15. Constrained output, strict parsing, invalid outputs counted
+- Ollama's `format` gets a JSON schema whose `intent` field is an enum of the 77 labels, so the model
+  can only emit a valid label (needs Ollama >= 0.5; checked at start-up).
+- The parser still accepts only an exact label or a trivially normalised one (case, spaces,
+  edge punctuation). No fuzzy guessing: a guessed label could hide model errors.
+- Unparseable answers get class -1: scored as wrong, and the invalid rate is reported separately.
+
+## D16. Decoding options and caching
+- temperature 0 and a fixed seed: answers are repeatable.
+- `num_ctx` 4096 set explicitly: Ollama's default context can be smaller than our prompt and
+  truncates it silently. A guard raises an error if a prompt comes close to the limit.
+- Every response is appended to `llm_cache/<model>.jsonl`, keyed by a hash of model + messages +
+  schema + options. The cache is committed, so the benchmark replays without calling the model.
+- Latency for the LLM is the wall time recorded when the call was made, minus Ollama's reported
+  model-load time (a one-off start-up cost, like the warm-up calls skipped for other models).
