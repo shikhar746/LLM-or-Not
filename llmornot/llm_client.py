@@ -39,6 +39,12 @@ class OllamaClient:
         resp.raise_for_status()
         return [m["name"] for m in resp.json()["models"]]
 
+    def running(self) -> list[dict]:
+        """Loaded models with total size and the part in GPU memory (size_vram == size: fully on GPU)."""
+        resp = self.session.get(f"{self.host}/api/ps", timeout=10)
+        resp.raise_for_status()
+        return [{k: m.get(k) for k in ("name", "size", "size_vram")} for m in resp.json().get("models", [])]
+
     def check(self) -> None:
         """Fail early, with a clear message, if Ollama is missing or too old."""
         try:
