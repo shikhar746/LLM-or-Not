@@ -1,0 +1,8 @@
+{
+  "majority": {
+    "majority_class_id": 20
+  },
+  "tfidf_lr": {
+    "C": 10
+  }
+}

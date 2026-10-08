@@ -1,0 +1,3 @@
+method,hardware,compute_seconds_per_1k,inr_per_1k,mean_input_tokens,mean_output_tokens
+majority,cpu,0.008861028004048421,,,
+tfidf_lr,cpu,2.1641252960080237,,,
