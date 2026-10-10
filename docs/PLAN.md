@@ -32,6 +32,9 @@ llm-or-not/
 
 ## Steps
 
+Status: steps 0-7 built. Methods 1-2 measured in the development container; methods 3 and 5 need
+the laptop (Hugging Face model download, Ollama + GPU). See README "How to reproduce".
+
 | # | Step | What you should understand afterwards |
 |---|------|------------------------------------|
 | 0 | Repo skeleton, pinned environment, this plan | Why pin versions and seeds |

@@ -129,3 +129,16 @@ Measured by `scripts/check_duplicates.py` (see `results/duplicates_summary.csv`)
   schema + options. The cache is committed, so the benchmark replays without calling the model.
 - Latency for the LLM is the wall time recorded when the call was made, minus Ollama's reported
   model-load time (a one-off start-up cost, like the warm-up calls skipped for other models).
+
+## D17. The README's numbers are generated, never typed
+- `scripts/make_report.py` rewrites the result tables (and the short observation sentences)
+  between `<!-- NAME:START/END -->` markers from `results/*.csv`. Unmeasured cells stay `[placeholder]`.
+- Each latency row records the machine it was measured on, and the README shows it, because
+  methods may be run on different machines (no GPU or Ollama in the development container).
+
+## D18. Error review protocol
+- 100 errors per method, sampled with the global seed, written with the nearest training message
+  next to each, to make label noise easy to spot.
+- Two tags only: `label_noise` (gold label wrong, or the message honestly fits both intents) and
+  `model_error`. Two tags keep the hand-review fast and the result easy to state.
+- The review file is never overwritten once created, so hand-tagging cannot be lost.
